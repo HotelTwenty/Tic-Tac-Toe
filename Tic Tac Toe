@@ -1,0 +1,149 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace TicTacToe
+{
+   
+    public partial class Form1 : Form
+    {
+        bool turn = true; //when it is true it is Xs turn, when false it Os turn.
+        int turn_count = 0; //Will increment everytime a button is pressed. Can't be more than 0.
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("By Black Shamaan Softworks", "Tic Tac Toe About");
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        //Here we create a generic methond for all the buttons.
+        private void button_click(object sender, EventArgs e)
+        {
+            Button b = (Button)sender;
+
+            if (turn)
+                b.Text = "X";
+            else
+                b.Text = "O";
+            turn = !turn; //This makes sure the program doesnt print consecutive X or O.
+
+            b.Enabled = false; //This makes sure a button can't be clicked again
+            //, hence it stops an X from being changed to an O and vice versa.
+            turn_count++;
+            checkForWiner();
+        }
+
+        //This method is used to check if there are 3 of the same value in a row diagonally,
+        //horizontal and vertical.
+        private void checkForWiner()
+        {
+            bool there_is_a_winner = false;
+
+            //Horizontal checks.
+            //The "!.Enabled is used because all of the buttons have the same default value"
+            //this allows the check to only look at buttons that have been clicked.
+           if ((A1.Text == A2.Text)&&(A2.Text == A3.Text) &&(!A1.Enabled))
+                there_is_a_winner = true;
+            else if ((B1.Text == B2.Text) && (B2.Text == B3.Text) && (!B1.Enabled))
+                there_is_a_winner = true;
+            else if ((C1.Text == C2.Text) && (C2.Text == C3.Text) && (!C1.Enabled))
+                there_is_a_winner = true;
+
+           //Vertical checks
+            else if ((A1.Text == B1.Text) && (B1.Text == C1.Text) && (!A1.Enabled))
+                there_is_a_winner = true;
+            else if ((A2.Text == B2.Text) && (B2.Text == C2.Text) && (!A2.Enabled))
+                there_is_a_winner = true;
+            else if ((A3.Text == B3.Text) && (B3.Text == C3.Text) && (!A3.Enabled))
+                there_is_a_winner = true;
+
+           //Diagonal checks
+            else if ((A1.Text == B2.Text) && (B2.Text == C3.Text) && (!A1.Enabled))
+                there_is_a_winner = true;
+            else if ((A3.Text == B2.Text) && (B2.Text == C1.Text) && (!C1.Enabled))
+                there_is_a_winner = true;
+           
+
+            if (there_is_a_winner)
+            {
+                disableButtons();
+
+                string winner = "";
+                if (turn)
+                    winner = "O";
+                else
+                    winner = "X";
+
+                MessageBox.Show(winner + " wins.", "Tic Tac Toe");
+            }
+
+            else //For the case of there is no winner. i.e turn_count = 9.
+            {
+                if (turn_count == 9)
+                    MessageBox.Show("This is a draw.", "Tic Tac Toe");
+            }
+        }
+
+        //This method makes sure you cannot continue playing after there is a winner.
+        private void disableButtons()
+        {
+            //This basically means for each component on the form(the buttons) they should be disabled
+            //until the form is restarted.
+
+            //The reason we are using a try catch block here is because the parameters are telling the compiler
+            //to disable the options in the menu strip.
+            try
+            {
+                foreach (Control c in Controls)
+                {
+                    Button b = (Button)c;
+                    b.Enabled = false;
+                }
+            }
+
+            catch
+            {
+
+            }
+        }
+
+        private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            turn = true;
+            turn_count = 0;
+
+            try
+            {
+                foreach (Control c in Controls)
+                {
+                    Button b = (Button)c;
+                    b.Enabled = true;
+                    b.Text = " ";
+                }
+            }
+
+            catch
+            {
+
+            }
+        }
+    }
+}
+//If you accidentally create an event handler/method for a component before giving it a name.
+//You can highliht it in the design, then hit the events(lightning bolt) and delete the method
+//where it says "Click".
